@@ -43,9 +43,7 @@ public class Product implements Serializable {
 
   public Product() {}
 
-  public Product(
-      Long id, String img_url, String name, String description, Double price, Instant date) {
-    this.id = id;
+  public Product(String img_url, String name, String description, Double price, Instant date) {
     this.img_url = img_url;
     this.name = name;
     this.description = description;
