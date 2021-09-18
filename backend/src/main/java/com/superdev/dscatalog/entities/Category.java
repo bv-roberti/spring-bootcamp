@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "c")
+@Table(name = "tb_category")
 public class Category implements Serializable {
 
   @Id
@@ -18,8 +18,7 @@ public class Category implements Serializable {
 
   private String name;
 
-  public Category(Long id, String name) {
-    this.setId(id);
+  public Category(String name) {
     this.setName(name);
   }
 

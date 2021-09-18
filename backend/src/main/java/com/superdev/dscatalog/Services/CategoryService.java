@@ -1,5 +1,6 @@
 package com.superdev.dscatalog.Services;
 
+import com.superdev.dscatalog.dto.CategoryDTO;
 import com.superdev.dscatalog.entities.Category;
 import com.superdev.dscatalog.exceptions.EntityNotFoundException;
 import com.superdev.dscatalog.repositories.CategoryRepository;
@@ -20,9 +21,18 @@ public class CategoryService {
   }
 
   @Transactional(readOnly = true)
-  public Category findbyid(long Id) {
+  public CategoryDTO findbyid(long Id) {
     Optional<Category> cat = categoryRepository.findById(Id);
 
-    return cat.orElseThrow(() -> new EntityNotFoundException(""));
+    return new CategoryDTO(cat.orElseThrow(() -> new EntityNotFoundException("")));
+  }
+
+  @Transactional()
+  public CategoryDTO insert(CategoryDTO cat) {
+    Category _category = new Category(cat.getName());
+
+    _category = categoryRepository.save(_category);
+
+    return new CategoryDTO(_category);
   }
 }
