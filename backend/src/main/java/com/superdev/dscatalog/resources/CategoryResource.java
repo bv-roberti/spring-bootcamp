@@ -52,7 +52,7 @@ public class CategoryResource {
 
     URI uri =
         ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/id")
+            .path("/{id}s")
             .buildAndExpand(cat.getId())
             .toUri();
 

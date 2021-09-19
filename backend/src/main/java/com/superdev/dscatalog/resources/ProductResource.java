@@ -52,7 +52,7 @@ public class ProductResource {
 
     URI uri =
         ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/id")
+            .path("/{id}")
             .buildAndExpand(cat.getId())
             .toUri();
 

@@ -4,6 +4,7 @@ import com.superdev.dscatalog.dto.ProductDTO;
 import com.superdev.dscatalog.entities.Product;
 import com.superdev.dscatalog.exceptions.DatabaseException;
 import com.superdev.dscatalog.exceptions.EntityNotFoundException;
+import com.superdev.dscatalog.repositories.CategoryRepository;
 import com.superdev.dscatalog.repositories.ProductRepository;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,8 @@ public class ProductService {
 
   @Autowired ProductRepository ProductRepository;
 
+  @Autowired CategoryRepository categoryRepo;
+
   @Transactional(readOnly = true)
   public List<Product> findAll() {
     return ProductRepository.findAll();
@@ -35,31 +38,24 @@ public class ProductService {
 
   @Transactional()
   public ProductDTO insert(ProductDTO prod) {
-    Product _Product =
-        new Product(
-            prod.getImg_url(),
-            prod.getName(),
-            prod.getDescription(),
-            prod.getPrice(),
-            prod.getDate());
+    Product _product = new Product();
+    copyDtoToEntity(prod, _product);
 
-    _Product = ProductRepository.save(_Product);
+    _product = ProductRepository.save(_product);
 
-    return new ProductDTO(_Product);
+    return new ProductDTO(_product);
   }
 
   @Transactional()
-  public ProductDTO update(Long id, ProductDTO cat) {
+  public ProductDTO update(Long id, ProductDTO prod) {
 
     try {
-      Product _Product = ProductRepository.getOne(id);
-      _Product.setName(cat.getName());
-      _Product.setDescription(cat.getDescription());
-      _Product.setPrice(cat.getPrice());
+      Product _product = new Product();
+      copyDtoToEntity(prod, _product);
 
-      _Product = ProductRepository.save(_Product);
+      _product = ProductRepository.save(_product);
 
-      return new ProductDTO(_Product);
+      return new ProductDTO(_product);
 
     } catch (javax.persistence.EntityNotFoundException e) {
       throw new EntityNotFoundException("Entity not found");
@@ -80,5 +76,18 @@ public class ProductService {
 
   public Page<ProductDTO> findAllPaged(PageRequest page) {
     return ProductRepository.findAll(page).map(x -> new ProductDTO(x));
+  }
+
+  private void copyDtoToEntity(ProductDTO dto, Product entity) {
+    entity.getCategories().clear();
+
+    entity.setName(dto.getName());
+    entity.setPrice(dto.getPrice());
+    entity.setDescription(dto.getDescription());
+    entity.setImg_url(dto.getImg_url());
+    entity.setDate(dto.getDate());
+
+    dto.getCategories()
+        .forEach(each -> entity.getCategories().add(categoryRepo.getOne(each.getId())));
   }
 }
