@@ -7,11 +7,13 @@ import com.superdev.dscatalog.exceptions.EntityNotFoundException;
 import com.superdev.dscatalog.repositories.CategoryRepository;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryService {
 
   @Autowired CategoryRepository categoryRepository;
+
+  Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Transactional(readOnly = true)
   public List<Category> findAll() {
@@ -34,9 +38,12 @@ public class CategoryService {
 
   @Transactional()
   public CategoryDTO insert(CategoryDTO cat) {
+
+    log.info("Creating new entry");
     Category _category = new Category(cat.getName());
 
     _category = categoryRepository.save(_category);
+    log.info("New entry created");
 
     return new CategoryDTO(_category);
   }
@@ -69,7 +76,7 @@ public class CategoryService {
     }
   }
 
-  public Page<CategoryDTO> findAllPaged(PageRequest page) {
+  public Page<CategoryDTO> findAllPaged(Pageable page) {
     return categoryRepository.findAll(page).map(x -> new CategoryDTO(x));
   }
 }
